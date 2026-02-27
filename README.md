@@ -1,246 +1,275 @@
-Here’s a clean, focused `README.md` version for a **Multimodal RAG system supporting Text, Images, and PDFs**, without project structure.
+Here is a clean `README.md` generated specifically based on your **Streamlit + Gemini Multimodal RAG implementation**:
 
 ---
 
-# Multimodal RAG (Text + Images + PDFs)
+# ⚡ Multimodal RAG (Streamlit + Gemini)
 
-A **Multimodal Retrieval-Augmented Generation (RAG)** system that retrieves and reasons over:
+A lightweight **Multimodal Retrieval-Augmented Generation (RAG)** application built with:
 
-- 📄 Text documents
-- 📘 PDFs (text + embedded images)
-- 🖼 Standalone images
+- 🖥️ Streamlit (UI)
+- 🤖 Google Google GenAI (Gemini models)
+- 📄 Text + PDF ingestion
+- 🖼 Image understanding
+- 🔎 Vector similarity search (NumPy-based)
 
-to generate grounded responses using multimodal large language models.
-
-> ⚠️ This implementation does **not** support audio or video.
-
----
-
-## 📌 Overview
-
-Traditional RAG systems operate only on text.
-This system extends retrieval to include **PDFs and images**, enabling:
-
-- Cross-modal retrieval (text ↔ image)
-- Diagram-aware question answering
-- PDF figure + paragraph linking
-- Grounded multimodal responses
-
-Generation can be powered by models from OpenAI or compatible vision-language models.
+This app allows users to upload **PDF, TXT, JPG, and PNG** files, index them into an in-memory vector database, and perform cross-modal search with grounded answer generation.
 
 ---
 
-## 🏗 Architecture
+## 🚀 Features
 
-```
-User Query (Text or Image)
-        │
-        ▼
-Multimodal Encoder
-        │
-        ▼
-Vector Database
- (Text + PDF chunks + Image embeddings)
-        │
-        ▼
-Top-K Retriever
-        │
-        ▼
-Context Fusion
-        │
-        ▼
-Multimodal LLM
-        │
-        ▼
-Grounded Response
-```
+### ✅ Supported Modalities
 
----
+- **PDF**
 
-## 🧩 Supported Modalities
+  - Text extracted using Gemini
+  - Chunked and embedded
 
-### ✅ Text
+- **Text files (.txt)**
 
-- TXT
-- Markdown
-- HTML
-- Structured metadata
+  - Recursive chunking with overlap
 
-### ✅ PDF
+- **Images (.jpg / .png)**
 
-- Text extraction
-- Embedded image extraction
-- Page-level metadata
-- Figure–caption linking (optional)
-
-### ✅ Images
-
-- PNG / JPG
-- Diagrams
-- Charts
-- Figures extracted from PDFs
+  - Automatically described by Gemini
+  - Description embedded for retrieval
 
 ### ❌ Not Supported
 
-- Audio files
-- Video files
-- Speech-to-text
-- Frame extraction
+- Audio
+- Video
+- External vector databases
+- Persistent storage (in-memory only)
 
 ---
 
-## 🔄 Pipeline Flow
+## 🏗 System Architecture
 
-### 1️⃣ Ingestion
-
-**Text**
-
-- Parse documents
-- Semantic chunking
-- Metadata tagging
-
-**PDF**
-
-- Extract page text
-- Extract embedded images
-- Preserve page references
-- Link figures to nearby text
-
-**Images**
-
-- Generate image embeddings
-- Optional image captioning
-
----
-
-### 2️⃣ Embeddings
-
-- Text embeddings
-- PDF chunk embeddings
-- Image embeddings (CLIP-style or aligned vision-text models)
-- Shared or dual embedding space strategy
+```id="arch1"
+User Upload (PDF / TXT / Image)
+        │
+        ▼
+Gemini Content Extraction
+        │
+        ▼
+Text Chunking
+        │
+        ▼
+Gemini Embeddings (gemini-embedding-001)
+        │
+        ▼
+In-Memory Vector Store (NumPy)
+        │
+        ▼
+Cosine Similarity Retrieval (Top-K)
+        │
+        ▼
+Gemini Generation (Selected Model)
+        │
+        ▼
+Grounded Final Answer
+```
 
 ---
 
-### 3️⃣ Vector Storage
+## ⚙️ Configuration Panel
 
-Embeddings can be stored in:
+From the sidebar, users can:
 
-- Pinecone
-- Weaviate
-- Milvus
-- FAISS
+- 🔑 Enter Gemini API Key
+- 🤖 Select Model:
 
-Each entry stores:
+  - `gemini-3-flash-preview`
+  - `gemini-2.5-flash`
+  - `gemini-2.5-pro`
 
-- Embedding vector
-- Modality type (text / pdf_text / image)
-- Source reference (file, page, section)
+- 🧩 Adjust RAG Parameters:
 
----
+  - Chunk Size
+  - Chunk Overlap
+  - Top-K Retrieval
 
-### 4️⃣ Retrieval
+- 🗑 Clear Index
 
-- Cross-modal similarity search
-- Hybrid retrieval (BM25 + vector search)
-- Optional re-ranking layer
-- Top-K results across modalities
-
-Examples:
-
-- Text query retrieving relevant images
-- Image query retrieving related PDF sections
-- PDF question retrieving specific diagrams
+Connection is validated before enabling indexing.
 
 ---
 
-### 5️⃣ Context Fusion
+## 🔍 How It Works
 
-- Merge text chunks + image references
-- Rank by relevance
-- Remove redundant content
-- Fit within model context limits
+### 1️⃣ Indexing Phase
 
----
+When files are uploaded:
 
-### 6️⃣ Generation
+#### 📄 PDF Processing
 
-The multimodal LLM:
+- PDF sent to Gemini
+- Model extracts text
+- Text is chunked
+- Each chunk embedded using `gemini-embedding-001`
+- Stored in session state vector DB
 
-- Receives text + image context
-- Reasons across modalities
-- Produces grounded answers
-- Optionally cites sources (file + page)
+#### 📝 Text Files
 
-Compatible with multimodal models such as:
+- Loaded directly
+- Split using recursive chunking
+- Embedded and stored
 
-- OpenAI GPT-4o-style models
-- Vision-language models (e.g., LLaVA-based systems)
+#### 🖼 Images
 
----
+- Sent to Gemini for description
+- Description used as embedding input
+- Raw image bytes stored for later generation
 
-## 💡 Example Usage (Conceptual)
+All vectors are stored in:
 
 ```python
-query = "Explain the architecture diagram in the PDF."
+st.session_state.vector_db = [
+    {
+        "type": "text" | "image",
+        "vec": np.array(...),
+        "data": text_or_image_bytes,
+        "src": source_name,
+        "desc": optional_image_description
+    }
+]
+```
 
-# Encode query
-query_embedding = encoder.encode(query)
+---
 
-# Retrieve relevant text + images
-results = vector_store.search(query_embedding, top_k=5)
+### 2️⃣ Retrieval Phase
 
-# Fuse context
-context = fuse_modalities(results)
+When a query is submitted:
 
-# Generate answer
-response = multimodal_llm.generate(
-    query=query,
-    context=context
-)
+1. Query is embedded
+2. Cosine similarity computed using NumPy:
 
-print(response)
+   ```python
+   scores = dot(A, B) / (||A|| * ||B||)
+   ```
+
+3. Top-K matches selected
+4. Retrieved items displayed in Inspector view
+5. Retrieved content passed to Gemini for grounded answer generation
+
+---
+
+### 3️⃣ Generation Phase
+
+The model receives:
+
+```
+Query: <user question>
+Answer based on this context:
+<retrieved text chunks>
+<retrieved images>
+```
+
+The selected Gemini model generates a final grounded response.
+
+---
+
+## 🧠 RAG Tuning Parameters
+
+| Parameter       | Purpose                              |
+| --------------- | ------------------------------------ |
+| Chunk Size      | Controls text chunk length           |
+| Chunk Overlap   | Preserves context continuity         |
+| Top-K           | Number of retrieved chunks           |
+| Model Selection | Controls generation quality vs speed |
+
+---
+
+## 🖥 Inspector Mode
+
+Two visual debugging views:
+
+### 📚 Initial Index Viewer
+
+- Shows indexed chunks in a 5-column grid
+- Text preview preserves whitespace
+- Images rendered directly
+
+### 🎯 Retrieved Matches Viewer
+
+- Displays similarity score
+- Shows exact content passed to model
+- Helps debug retrieval quality
+
+---
+
+## 📦 Dependencies
+
+- `streamlit`
+- `google-genai`
+- `numpy`
+- `io`
+
+Install:
+
+```bash
+pip install streamlit google-genai numpy
+```
+
+Run:
+
+```bash
+streamlit run app.py
 ```
 
 ---
 
 ## 🎯 Use Cases
 
-- Technical documentation with diagrams
-- Research papers with figures
-- Enterprise knowledge bases (PDF-heavy)
-- Legal or compliance documents with exhibits
-- Product manuals with illustrations
+- PDF-based knowledge assistants
+- Diagram-aware Q&A
+- Document + image search
+- Lightweight multimodal prototyping
+- RAG experimentation without external vector DB
 
 ---
 
-## 📊 Evaluation Metrics
+## 🛡 Design Decisions
 
-- Retrieval Recall@K
-- Cross-modal relevance score
-- Hallucination rate
-- Source grounding accuracy
-- PDF page attribution accuracy
+- In-memory vector store (simple + transparent)
+- Gemini-based PDF text extraction (no external PDF parser)
+- Image → description → embedding pipeline
+- Cosine similarity via NumPy
+- Debug-first UI with full inspection
 
 ---
 
-## 🛡 Design Principles
+## ⚠️ Limitations
 
-- Preserve PDF page references
-- Link images to surrounding text
-- Store modality metadata
-- Log retrieval traces
-- Enforce grounded prompting
+- No persistent storage
+- No batching optimizations
+- No hybrid BM25 retrieval
+- No metadata filtering
+- PDF extraction quality depends on Gemini output
+- All embeddings use a single embedding model
+
+---
+
+## 🔮 Possible Improvements
+
+- Add persistent vector DB (e.g., FAISS)
+- Add hybrid retrieval
+- Add metadata filtering
+- Support structured citations
+- Add streaming responses
+- Add reranking stage
+- Add table-aware extraction
 
 ---
 
 ## 🏁 Summary
 
-This Multimodal RAG system enables:
+This project demonstrates a clean, transparent implementation of:
 
-✅ Text + Image + PDF retrieval
-✅ Diagram-aware reasoning
-✅ Cross-modal grounding
-✅ Higher answer reliability
+- ✅ Multimodal ingestion (PDF + Text + Images)
+- ✅ Gemini-based embeddings
+- ✅ NumPy cosine similarity retrieval
+- ✅ Streamlit debugging interface
+- ✅ Grounded multimodal answer generation
 
-while keeping the system lightweight by excluding audio and video pipelines.
+It is ideal for experimentation, demos, and understanding how Multimodal RAG works end-to-end without complex infrastructure.
