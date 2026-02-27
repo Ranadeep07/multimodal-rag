@@ -1,0 +1,61 @@
+Company Knowledge Base
+======================
+
+Refund Policy
+-------------
+Customers are eligible for a full refund within 14 days of purchase if the product has not been heavily used. 
+Refunds are processed back to the original payment method within 5 to 7 business days.
+Refund requests made after 14 days may be approved only in exceptional cases.
+
+Subscription cancellations take effect at the end of the current billing cycle.
+No partial refunds are provided for unused subscription time.
+
+---
+
+Shipping Information
+--------------------
+We offer standard and express shipping options.
+Standard shipping typically takes 5 to 7 business days.
+Express shipping typically takes 1 to 2 business days.
+
+Shipping times may vary depending on the destination country and customs processing.
+Tracking information is sent via email once the order has shipped.
+
+---
+
+Account Management
+------------------
+Users can update their email address, password, and profile information from the Account Settings page.
+If a user forgets their password, they can reset it using the "Forgot Password" link on the login page.
+
+Accounts that remain inactive for more than 24 months may be automatically deactivated.
+Deactivated accounts can be reactivated by contacting customer support.
+
+---
+
+Data Privacy
+------------
+We collect only the minimum amount of personal data required to provide our services.
+Personal data is never sold to third parties.
+
+User data is stored in encrypted databases and access is restricted to authorized personnel only.
+Users may request deletion of their personal data by submitting a data removal request.
+
+---
+
+Technical Support
+-----------------
+Technical support is available Monday through Friday, 9 AM to 6 PM (UTC).
+Support requests can be submitted through the Help Center or by email.
+
+Critical system outages are prioritized and typically responded to within 1 hour.
+Non-critical issues are responded to within 24 business hours.
+
+---
+
+Security Practices
+------------------
+All user passwords are hashed using industry-standard hashing algorithms.
+Two-factor authentication (2FA) is available and strongly recommended.
+
+We regularly conduct security audits and penetration testing to identify vulnerabilities.
